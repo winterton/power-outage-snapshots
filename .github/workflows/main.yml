@@ -1,0 +1,22 @@
+name: Snapshot outages
+on:
+  schedule:
+    - cron: "*/15 * * * *"   # update cadence; GitHub often runs late by 5–20 min
+  workflow_dispatch:         # lets you trigger it by hand from the Actions tab
+permissions:
+  contents: write            # needed for the commit/push step
+concurrency:
+  group: snapshot
+  cancel-in-progress: false  # a late run shouldn't kill one already in flight
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: ./snapshot.sh
+      - run: |
+          git config user.name  "snapshot-bot"
+          git config user.email "snapshot-bot@users.noreply.github.com"
+          git add data
+          git diff --cached --quiet || git commit -m "snapshot $(date -u +%FT%TZ)"
+          git push

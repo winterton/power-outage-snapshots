@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: ./snapshot.sh
+      - run: bash snapshot.sh
       - run: |
           git config user.name  "snapshot-bot"
           git config user.email "snapshot-bot@users.noreply.github.com"
